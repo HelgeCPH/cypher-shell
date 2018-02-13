@@ -82,15 +82,21 @@ public interface OutputFormatter {
     @Nonnull default String relationshipAsString(@Nonnull Relationship relationship) {
         List<String> relationshipAsString = new ArrayList<>();
         relationshipAsString.add(COLON + escape(relationship.type()));
-        relationshipAsString.add(mapAsString(relationship.asMap(this::formatValue)));
-
-        return "[" + joinWithSpace(relationshipAsString) + "]";
+        Map<String, Object> relationMap = 
+            new HashMap(relationship.asMap(this::formatValue));
+        relationMap.put("_id_", relationship.id());
+        relationshipAsString.add(mapAsString(relationMap));
+        String dir = "[" + relationship.startNodeId() + ">" + relationship.endNodeId() + "]";
+        return "[" + joinWithSpace(relationshipAsString) + dir +"]";
     }
 
     @Nonnull default String nodeAsString(@Nonnull final Node node) {
         List<String> nodeAsString = new ArrayList<>();
         nodeAsString.add(collectNodeLabels(node));
-        nodeAsString.add(mapAsString(node.asMap(this::formatValue)));
+        Map<String, Object> nodeMap = 
+            new HashMap(node.asMap(this::formatValue));
+        nodeMap.put("_id_", String.valueOf(node.id()));
+        nodeAsString.add(mapAsString(nodeMap));
 
         return "(" + joinWithSpace(nodeAsString) + ")";
     }

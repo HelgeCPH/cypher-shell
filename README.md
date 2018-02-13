@@ -1,3 +1,53 @@
+## Why this fork?
+
+I am building a Cypher kernel for Jupyter notebooks, see https://github.com/HelgeCPH/cypher_kernel.
+
+To allow for parsing of the REPL output into visualizations, I need a bit more of information on graph entities. In particular, each entity needs to carry it's own `id` and each relation needs to carry the source and target nodes. That is, this modified `OutputFormatter` generates in `verbose` mode output as in the following for the corresponding model and query:
+
+```cypher-shell
+CREATE ( bike:Bike { weight: 10 } ) 
+CREATE ( frontWheel:Wheel { spokes: 3 } ) 
+CREATE ( backWheel:Wheel { spokes: 32 } ) 
+CREATE p1 = (bike)-[:HAS { position: 1 } ]->(frontWheel) 
+CREATE p2 = (bike)-[:HAS { position: 2 } ]->(backWheel) 
+RETURN bike, p1, p2
+```
+
+```cypher
+MATCH (a)-[b:HAS]-(c) RETURN a, b, c;
+```
+
+```
+neo4j> MATCH (a)-[b:HAS]-(c) RETURN a, b, c;
++-----------------------------------------------------------------------------------------------------------+
+| a                               | b                                     | c                               |
++-----------------------------------------------------------------------------------------------------------+
+| (:Bike {weight: 10, _id_: 58})  | [:HAS {_id_: 36, position: 2}[58>60]] | (:Wheel {spokes: 32, _id_: 60}) |
+| (:Bike {weight: 10, _id_: 58})  | [:HAS {_id_: 35, position: 1}[58>59]] | (:Wheel {spokes: 3, _id_: 59})  |
+| (:Wheel {spokes: 3, _id_: 59})  | [:HAS {_id_: 35, position: 1}[58>59]] | (:Bike {weight: 10, _id_: 58})  |
+| (:Wheel {spokes: 32, _id_: 60}) | [:HAS {_id_: 36, position: 2}[58>60]] | (:Bike {weight: 10, _id_: 58})  |
++-----------------------------------------------------------------------------------------------------------+
+
+4 rows available after 1 ms, consumed after another 0 ms
+```
+
+
+The original output would look like:
+
+```
+neo4j> MATCH (a)-[b:HAS]-(c) RETURN a, b, c;
++----------------------------------------------------------------------+
+| a                     | b                    | c                     |
++----------------------------------------------------------------------+
+| (:Bike {weight: 10})  | [:HAS {position: 2}] | (:Wheel {spokes: 32}) |
+| (:Bike {weight: 10})  | [:HAS {position: 1}] | (:Wheel {spokes: 3})  |
+| (:Wheel {spokes: 3})  | [:HAS {position: 1}] | (:Bike {weight: 10})  |
+| (:Wheel {spokes: 32}) | [:HAS {position: 2}] | (:Bike {weight: 10})  |
++----------------------------------------------------------------------+
+
+4 rows available after 0 ms, consumed after another 1 ms
+```
+
 ## How to build
 
 Use `make help` (`gradlew tasks`) to list possible tasks. But you
