@@ -29,7 +29,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class InteractiveShellRunner implements ShellRunner, SignalHandler {
     static final String INTERRUPT_SIGNAL = "INT";
     private final static AnsiFormattedText freshPrompt = AnsiFormattedText.s().bold().append("neo4j> ");
-    private final static AnsiFormattedText continuationPrompt = AnsiFormattedText.s().bold().append("       ");
+    //private final static AnsiFormattedText continuationPrompt = AnsiFormattedText.s().bold().append("       ");
+    private final static AnsiFormattedText continuationPrompt = AnsiFormattedText.s().bold().append("  ...: ");
     private final static AnsiFormattedText transactionPrompt = AnsiFormattedText.s().bold().append("neo4j# ");
     // Need to know if we are currently executing when catch Ctrl-C, needs to be atomic due to
     // being called from different thread
